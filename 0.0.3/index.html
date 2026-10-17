@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Valuation - B3</title>
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --input-bg: #0f172a;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-blue: #38bdf8;
+      --accent-green: #4ade80;
+      --accent-red: #f87171;
+      --accent-yellow: #facc15;
+      --accent-purple: #c084fc;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      width: 100%;
+      max-width: 520px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    h1 {
+      font-size: 1.4rem;
+      text-align: center;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    p.subtitle {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--accent-blue);
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .toggle-btn {
+      background: none;
+      border: none;
+      color: var(--accent-blue);
+      font-size: 0.8rem;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-group label {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .input-group input {
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px;
+      color: var(--text-main);
+      font-size: 0.95rem;
+      font-weight: 600;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .input-group input:focus {
+      border-color: var(--accent-blue);
+    }
+
+    /* Card de Destaque Principal */
+    .hero-card {
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .hero-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent-blue);
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .hero-value {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffffff;
+      margin-bottom: 8px;
+    }
+
+    .hero-status {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    /* Modelos Lado a Lado */
+    .models-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .model-card {
+      background-color: var(--input-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .model-name {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .model-price {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .bazin-color { color: var(--accent-green); }
+    .graham-color { color: var(--accent-purple); }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-success { background-color: rgba(74, 222, 128, 0.15); color: var(--accent-green); }
+    .badge-danger { background-color: rgba(248, 113, 113, 0.15); color: var(--accent-red); }
+
+    .model-subtext {
+      font-size: 0.7rem;
+      margin-top: 6px;
+      color: var(--text-muted);
+    }
+
+    .footer-notes {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+      border-top: 1px dashed var(--border-color);
+      padding-top: 12px;
+    }
+
+    .footer-notes ul {
+      list-style-type: none;
+    }
+
+    .footer-notes li {
+      margin-bottom: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>Calculadora de Valuation</h1>
+    <p class="subtitle">Análise com Preço-Teto (Bazin) e Preço Justo (Graham)</p>
+
+    <div class="section-title">
+      <span>1. Dados do Ativo</span>
+      <button class="toggle-btn" id="toggleModeBtn" onclick="toggleDividendInput()">Alternar para Dividendo em R$</button>
+    </div>
+
+    <div class="grid-2">
+      <div class="input-group">
+        <label for="cotacao">Cotação Atual (R$)</label>
+        <input type="number" id="cotacao" value="66.77" step="0.01" oninput="calcular()">
+      </div>
+
+      <!-- Input de Dividendo (Altera entre % e R$) -->
+      <div class="input-group" id="divGroupPercent">
+        <label for="dyAtual">DY Atual (%)</label>
+        <input type="number" id="dyAtual" value="5.44" step="0.01" oninput="calcular()">
+      </div>
+
+      <div class="input-group" id="divGroupReais" style="display: none;">
+        <label for="divDinheiro">Dividendo em Dinheiro (R$)</label>
+        <input type="number" id="divDinheiro" value="4.75" step="0.01" oninput="calcular()">
+      </div>
+
+      <div class="input-group">
+        <label for="dyAlvo">DY Alvo Desejado (%)</label>
+        <input type="number" id="dyAlvo" value="7.5" step="0.1" oninput="calcular()">
+      </div>
+
+      <div class="input-group">
+        <label for="margemDesconto">Margem de Desconto (%)</label>
+        <input type="number" id="margemDesconto" value="20.0" step="1" oninput="calcular()">
+      </div>
+
+      <div class="input-group">
+        <label for="lpa">LPA (Lucro p/ Ação)</label>
+        <input type="number" id="lpa" value="10.35" step="0.01" oninput="calcular()">
+      </div>
+
+      <div class="input-group">
+        <label for="vpa">VPA (Patrimônio p/ Ação)</label>
+        <input type="number" id="vpa" value="37.31" step="0.01" oninput="calcular()">
+      </div>
+    </div>
+
+    <!-- Preço Ideal de Compra -->
+    <div class="hero-card">
+      <div class="hero-title">🎯 Preço Ideal de Compra (Com Margem de Segurança)</div>
+      <div class="hero-value" id="precoIdealDisplay">R$ 0,00</div>
+      <div class="hero-status" id="statusIdealDisplay">Aguardando dados...</div>
+    </div>
+
+    <div class="section-title">2. Modelos de Valuation Clássicos</div>
+
+    <div class="models-grid">
+      <!-- Card Bazin -->
+      <div class="model-card">
+        <div class="model-name">Preço-Teto (Bazin)</div>
+        <div class="model-price bazin-color" id="bazinDisplay">R$ 0,00</div>
+        <div id="bazinBadge" class="badge">--</div>
+        <div class="model-subtext" id="bazinSubtext">--</div>
+      </div>
+
+      <!-- Card Graham -->
+      <div class="model-card">
+        <div class="model-name">Preço Justo (Graham)</div>
+        <div class="model-price graham-color" id="grahamDisplay">R$ 0,00</div>
+        <div id="grahamBadge" class="badge">--</div>
+        <div class="model-subtext" id="grahamSubtext">--</div>
+      </div>
+    </div>
+
+    <!-- Legendas de Ajuda -->
+    <div class="footer-notes">
+      <ul>
+        <li>• <strong>Preço Ideal:</strong> Valor do Preço-Teto aplicando o desconto percentual da Margem de Segurança.</li>
+        <li>• <strong>Preço-Teto (Bazin):</strong> Teto máximo de compra baseado na meta de proventos. Fórmula: Dividendo ÷ DY Alvo.</li>
+        <li>• <strong>Preço Justo (Graham):</strong> Fórmula baseada no patrimônio e lucro contábil: √(22,5 × LPA × VPA).</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    let isPercentMode = true;
+
+    function toggleDividendInput() {
+      isPercentMode = !isPercentMode;
+      const groupPercent = document.getElementById('divGroupPercent');
+      const groupReais = document.getElementById('divGroupReais');
+      const toggleBtn = document.getElementById('toggleModeBtn');
+
+      if (isPercentMode) {
+        groupPercent.style.display = 'flex';
+        groupReais.style.display = 'none';
+        toggleBtn.innerText = 'Alternar para Dividendo em R$';
+      } else {
+        groupPercent.style.display = 'none';
+        groupReais.style.display = 'flex';
+        toggleBtn.innerText = 'Alternar para DY (%) Mastigado';
+      }
+      calcular();
+    }
+
+    function formatarMoeda(valor) {
+      if (isNaN(valor) || !isFinite(valor)) return "R$ 0,00";
+      return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function calcular() {
+      const cotacao = parseFloat(document.getElementById('cotacao').value) || 0;
+      const dyAlvo = (parseFloat(document.getElementById('dyAlvo').value) || 0) / 100;
+      const margemDesconto = (parseFloat(document.getElementById('margemDesconto').value) || 0) / 100;
+      const lpa = parseFloat(document.getElementById('lpa').value) || 0;
+      const vpa = parseFloat(document.getElementById('vpa').value) || 0;
+
+      let dividendoAnualEmReais = 0;
+
+      if (isPercentMode) {
+        const dyAtual = (parseFloat(document.getElementById('dyAtual').value) || 0) / 100;
+        dividendoAnualEmReais = cotacao * dyAtual;
+      } else {
+        dividendoAnualEmReais = parseFloat(document.getElementById('divDinheiro').value) || 0;
+      }
+
+      // 1. Cálculo Bazin
+      const precoTetoBazin = dyAlvo > 0 ? (dividendoAnualEmReais / dyAlvo) : 0;
+
+      // 2. Cálculo Preço Ideal
+      const precoIdeal = precoTetoBazin * (1 - margemDesconto);
+
+      // 3. Cálculo Graham
+      let precoJustoGraham = 0;
+      if (lpa > 0 && vpa > 0) {
+        precoJustoGraham = Math.sqrt(22.5 * lpa * vpa);
+      }
+
+      // Atualizar interface - Preço Ideal
+      document.getElementById('precoIdealDisplay').innerText = formatarMoeda(precoIdeal);
+      const statusIdeal = document.getElementById('statusIdealDisplay');
+
+      if (cotacao <= precoIdeal) {
+        statusIdeal.innerHTML = `<span style="color: var(--accent-green);">🟢 EXCELENTE OPORTUNIDADE:</span> Cotação abaixo da Margem de Segurança!`;
+      } else if (cotacao <= precoTetoBazin) {
+        statusIdeal.innerHTML = `<span style="color: var(--accent-yellow);">🟡 DENTRO DO TETO:</span> Cotação aceitável, mas sem o desconto completo desejado.`;
+      } else {
+        statusIdeal.innerHTML = `<span style="color: var(--accent-red);">🔴 ACIMA DO TETO MÁXIMO:</span> Cotação acima dos ${formatarMoeda(precoTetoBazin)}. Aguardar recuo.`;
+      }
+
+      // Atualizar Bazin
+      document.getElementById('bazinDisplay').innerText = formatarMoeda(precoTetoBazin);
+      const bazinBadge = document.getElementById('bazinBadge');
+      const bazinSubtext = document.getElementById('bazinSubtext');
+
+      if (cotacao <= precoTetoBazin) {
+        bazinBadge.className = "badge badge-success";
+        bazinBadge.innerText = "Abaixo do Teto";
+        const margem = precoTetoBazin > 0 ? ((precoTetoBazin - cotacao) / cotacao) * 100 : 0;
+        bazinSubtext.innerText = `Margem: +${margem.toFixed(1)}%`;
+      } else {
+        bazinBadge.className = "badge badge-danger";
+        bazinBadge.innerText = "Acima do Teto";
+        const agio = precoTetoBazin > 0 ? ((cotacao - precoTetoBazin) / precoTetoBazin) * 100 : 0;
+        bazinSubtext.innerText = `Ágio: -${agio.toFixed(1)}%`;
+      }
+
+      // Atualizar Graham
+      document.getElementById('grahamDisplay').innerText = formatarMoeda(precoJustoGraham);
+      const grahamBadge = document.getElementById('grahamBadge');
+      const grahamSubtext = document.getElementById('grahamSubtext');
+
+      if (precoJustoGraham > 0) {
+        if (cotacao <= precoJustoGraham) {
+          grahamBadge.className = "badge badge-success";
+          grahamBadge.innerText = "Abaixo do Teto";
+          const margem = ((precoJustoGraham - cotacao) / cotacao) * 100;
+          grahamSubtext.innerText = `Margem: +${margem.toFixed(1)}%`;
+        } else {
+          grahamBadge.className = "badge badge-danger";
+          grahamBadge.innerText = "Acima do Teto";
+          const agio = ((cotacao - precoJustoGraham) / precoJustoGraham) * 100;
+          grahamSubtext.innerText = `Ágio: -${agio.toFixed(1)}%`;
+        }
+      } else {
+        grahamBadge.className = "badge";
+        grahamBadge.innerText = "N/A";
+        grahamSubtext.innerText = "LPA ou VPA inválidos";
+      }
+    }
+
+    // Executar primeiro cálculo ao carregar a página
+    calcular();
+  </script>
+</body>
+</html>
