@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Valuation | Bazin, Graham & Faixa Ideal</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
+            --primary: #38bdf8;
+            --accent: #22c55e;
+            --accent-graham: #a855f7;
+            --warning: #eab308;
+            --danger: #ef4444;
+            --border: #334155;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 650px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            text-align: center;
+        }
+
+        p.subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 12px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toggle-btn {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-size: 0.8rem;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        .grid-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-color);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input[type="number"]:focus {
+            border-color: var(--primary);
+        }
+
+        /* Banner de Faixa Ideal de Aporte */
+        .ideal-box {
+            background: linear-gradient(135deg, rgba(56, 189, 248, 0.12), rgba(30, 41, 59, 0.95));
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            border-radius: 10px;
+            padding: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .ideal-title {
+            font-size: 0.8rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 600;
+            margin-bottom: 6px;
+        }
+
+        .ideal-value {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #ffffff;
+        }
+
+        .ideal-desc {
+            font-size: 0.8rem;
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+        }
+
+        .result-box {
+            background-color: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .result-box.bazin { border-color: rgba(34, 197, 94, 0.4); }
+        .result-box.graham { border-color: rgba(168, 85, 247, 0.4); }
+
+        .result-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .result-value.bazin { color: var(--accent); }
+        .result-value.graham { color: var(--accent-graham); }
+
+        .status-badge {
+            margin-top: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            padding: 6px 10px;
+            border-radius: 6px;
+            display: inline-block;
+            line-height: 1.3;
+        }
+
+        .status-badge.cheap {
+            background-color: rgba(34, 197, 94, 0.15);
+            color: var(--accent);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-badge.expensive {
+            background-color: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .formula-hint {
+            margin-top: 16px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: center;
+            line-height: 1.4;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Calculadora de Valuation</h1>
+        <p class="subtitle">Análise com Preço-Teto, Graham e Faixa Ideal de Aporte</p>
+
+        <!-- Seção 1: Indicadores -->
+        <div class="section-title">
+            1. Dados do Ativo
+            <button class="toggle-btn" id="toggleModoBtn" type="button">Alternar para DY (%) Mastigado</button>
+        </div>
+        
+        <div class="grid-inputs">
+            <div class="input-group">
+                <label for="cotacao">Cotação Atual (R$)</label>
+                <input type="number" id="cotacao" value="41.99" step="0.01">
+            </div>
+
+            <!-- Entrada de Dividendos em R$ (Padrão Recomendado) -->
+            <div class="input-group" id="groupDpsManual">
+                <label for="dps">Dividendo em Dinheiro (R$)</label>
+                <input type="number" id="dps" value="3.00" step="0.01">
+            </div>
+
+            <!-- Entrada de Dividendos em % (Secundário) -->
+            <div class="input-group hidden" id="groupDyAtual">
+                <label for="dyAtual">DY Atual do Site (%)</label>
+                <input type="number" id="dyAtual" value="10.91" step="0.01">
+            </div>
+
+            <div class="input-group">
+                <label for="yieldAlvo">DY Alvo Desejado (%)</label>
+                <input type="number" id="yieldAlvo" value="6.0" step="0.5">
+            </div>
+
+            <div class="input-group">
+                <label for="descontoMax">Margem de Desconto Max (%)</label>
+                <input type="number" id="descontoMax" value="30.0" step="1.0">
+            </div>
+
+            <div class="input-group">
+                <label for="descontoMin">Margem de Desconto Min (%)</label>
+                <input type="number" id="descontoMin" value="20.0" step="1.0">
+            </div>
+
+            <div class="input-group">
+                <label for="lpa">LPA (Lucro p/ Ação)</label>
+                <input type="number" id="lpa" value="4.73" step="0.05">
+            </div>
+
+            <div class="input-group">
+                <label for="vpa">VPA (Patrimônio p/ Ação)</label>
+                <input type="number" id="vpa" value="5.61" step="0.05">
+            </div>
+        </div>
+
+        <!-- Destaque: Faixa Ideal para Aporte -->
+        <div class="ideal-box">
+            <div class="ideal-title">🎯 Faixa Ideal para Aporte (Zona de Margem de Segurança)</div>
+            <div class="ideal-value" id="faixaIdealDisplay">R$ 0,00 - R$ 0,00</div>
+            <div class="ideal-desc" id="statusIdealTexto">Calculando zona de compra...</div>
+        </div>
+
+        <!-- Seção 2: Modelos Clássicos -->
+        <div class="section-title">2. Modelos de Valuation Clássicos</div>
+        <div class="results-grid">
+            <div class="result-box bazin">
+                <div>
+                    <div class="result-label">Preço-Teto (Bazin)</div>
+                    <div class="result-value bazin" id="precoBazin">R$ 0,00</div>
+                </div>
+                <div id="statusBazin" class="status-badge cheap">Margem: --</div>
+            </div>
+            <div class="result-box graham">
+                <div>
+                    <div class="result-label">Preço Justo (Graham)</div>
+                    <div class="result-value graham" id="precoGraham">R$ 0,00</div>
+                </div>
+                <div id="statusGraham" class="status-badge cheap">Margem: --</div>
+            </div>
+        </div>
+
+        <div class="formula-hint">
+            • <strong>Faixa Ideal:</strong> Intervalo de aporte aplicando margem de segurança entre min e max sobre Bazin.<br>
+            • <strong>Preço-Teto (Bazin):</strong> Teto máximo absoluto de compra para a sua meta de dividendos.<br>
+            • <strong>Preço Justo (Graham):</strong> Fórmula baseada na raiz quadrada de 22,5 × LPA × VPA.
+        </div>
+    </div>
+
+    <script>
+        const inputCotacao = document.getElementById('cotacao');
+        const inputDyAtual = document.getElementById('dyAtual');
+        const inputDps = document.getElementById('dps');
+        const inputYield = document.getElementById('yieldAlvo');
+        const inputDescontoMax = document.getElementById('descontoMax');
+        const inputDescontoMin = document.getElementById('descontoMin');
+        const inputLpa = document.getElementById('lpa');
+        const inputVpa = document.getElementById('vpa');
+
+        const groupDyAtual = document.getElementById('groupDyAtual');
+        const groupDpsManual = document.getElementById('groupDpsManual');
+        const toggleModoBtn = document.getElementById('toggleModoBtn');
+
+        const faixaIdealDisplay = document.getElementById('faixaIdealDisplay');
+        const statusIdealTexto = document.getElementById('statusIdealTexto');
+        const spanPrecoBazin = document.getElementById('precoBazin');
+        const spanPrecoGraham = document.getElementById('precoGraham');
+        const statusBazin = document.getElementById('statusBazin');
+        const statusGraham = document.getElementById('statusGraham');
+
+        let modoManual = true;
+
+        toggleModoBtn.addEventListener('click', () => {
+            modoManual = !modoManual;
+            if (modoManual) {
+                groupDyAtual.classList.add('hidden');
+                groupDpsManual.classList.remove('hidden');
+                toggleModoBtn.textContent = 'Alternar para DY (%) Mastigado';
+            } else {
+                groupDyAtual.classList.remove('hidden');
+                groupDpsManual.classList.add('hidden');
+                toggleModoBtn.textContent = 'Alternar para Dividendo em R$';
+            }
+            calcularValuation();
+        });
+
+        function formatarMoeda(valor) {
+            return valor.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        }
+
+        function calcularEMostrarMargem(elemento, cotacao, precoJusto) {
+            if (precoJusto <= 0 || isNaN(precoJusto) || cotacao <= 0) {
+                elemento.textContent = "N/A";
+                elemento.className = "status-badge";
+                return;
+            }
+
+            const margemPct = ((precoJusto - cotacao) / precoJusto) * 100;
+            const margemFormatada = margemPct.toFixed(1).replace('.', ',');
+
+            if (margemPct >= 0) {
+                // elemento.innerHTML = `ABAIXO DO TETO<br>Folga/Margem de Segurança: +${margemFormatada}%`;
+                
+                // elemento.innerHTML = `ABAIXO DO TETO<br>Margem de Segurança: +${margemFormatada}%`;
+                // Ou de forma mais resumida/compacta para caber bem na caixa:
+                elemento.innerHTML = `ABAIXO DO TETO<br>Margem: +${margemFormatada}%`;
+
+
+                elemento.className = "status-badge cheap";
+            } else {
+                elemento.innerHTML = `ACIMA DO TETO<br>Ágio: ${margemFormatada}%`;
+                elemento.className = "status-badge expensive";
+            }
+        }
+
+        function calcularValuation() {
+            const cotacao = parseFloat(inputCotacao.value) || 0;
+            const yieldAlvo = parseFloat(inputYield.value) || 0;
+            const descMax = parseFloat(inputDescontoMax.value) || 0;
+            const descMin = parseFloat(inputDescontoMin.value) || 0;
+            const lpa = parseFloat(inputLpa.value) || 0;
+            const vpa = parseFloat(inputVpa.value) || 0;
+
+            let dps = 0;
+            if (modoManual) {
+                dps = parseFloat(inputDps.value) || 0;
+            } else {
+                const dyAtual = parseFloat(inputDyAtual.value) || 0;
+                dps = cotacao * (dyAtual / 100);
+            }
+
+            // 1. Preço-Teto Bazin
+            let precoBazin = 0;
+            if (yieldAlvo > 0 && dps > 0) {
+                precoBazin = dps / (yieldAlvo / 100);
+                spanPrecoBazin.textContent = formatarMoeda(precoBazin);
+            } else {
+                spanPrecoBazin.textContent = "R$ 0,00";
+            }
+            calcularEMostrarMargem(statusBazin, cotacao, precoBazin);
+
+            // 2. Faixa Ideal de Compra (Intervalo de Desconto)
+            if (precoBazin > 0) {
+                const pMinimo = precoBazin * (1 - (descMax / 100)); // Maior desconto (Preço menor)
+                const pMaximo = precoBazin * (1 - (descMin / 100)); // Menor desconto (Preço maior)
+
+                faixaIdealDisplay.textContent = `${formatarMoeda(pMinimo)} - ${formatarMoeda(pMaximo)}`;
+
+                if (cotacao <= pMinimo) {
+                    statusIdealTexto.innerHTML = `<span style="color: var(--accent); font-weight: 700;">🟢 ZONA DE OPORTUNIDADE RARA!</span> Cotação atual (R$ ${cotacao.toFixed(2).replace('.',',')}) está com desconto superior a ${descMax}%.`;
+                } else if (cotacao <= pMaximo) {
+                    statusIdealTexto.innerHTML = `<span style="color: var(--accent); font-weight: 700;">🟢 DENTRO DA FAIXA IDEAL!</span> Cotação atual está excelente para aporte com margem de segurança.`;
+                } else if (cotacao <= precoBazin) {
+                    statusIdealTexto.innerHTML = `<span style="color: var(--warning); font-weight: 700;">🟡 PREÇO RAZOÁVEL / ACEITÁVEL.</span> Abaixo do teto (R$ ${precoBazin.toFixed(2).replace('.',',')}), mas acima da faixa ideal com desconto.`;
+                } else {
+                    statusIdealTexto.innerHTML = `<span style="color: var(--danger); font-weight: 700;">🔴 ACIMA DO TETO MAXIMO.</span> Cotação acima dos R$ ${precoBazin.toFixed(2).replace('.',',')}. Recomendado aguardar recuo.`;
+                }
+            } else {
+                faixaIdealDisplay.textContent = "R$ 0,00 - R$ 0,00";
+                statusIdealTexto.textContent = "Aguardando dados de dividendos...";
+            }
+
+            // 3. Preço Justo Graham
+            let precoGraham = 0;
+            if (lpa > 0 && vpa > 0) {
+                precoGraham = Math.sqrt(22.5 * lpa * vpa);
+                spanPrecoGraham.textContent = formatarMoeda(precoGraham);
+            } else {
+                spanPrecoGraham.textContent = "N/A (LPA/VPA ≤ 0)";
+            }
+            calcularEMostrarMargem(statusGraham, cotacao, precoGraham);
+        }
+
+        [inputCotacao, inputDyAtual, inputDps, inputYield, inputDescontoMax, inputDescontoMin, inputLpa, inputVpa].forEach(input => {
+            input.addEventListener('input', calcularValuation);
+        });
+
+        calcularValuation();
+    </script>
+
+</body>
+</html>
